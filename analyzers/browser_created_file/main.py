@@ -31,6 +31,6 @@ def analyzer(client: DgraphClient, graph: SubgraphView, sender: Any):
                 ExecutionHit(
                     analyzer_name="Browser Created File",
                     node_view=p,
-                    risk_score=5,
+                    risk_score=10,
                 )
             )
