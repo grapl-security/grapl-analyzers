@@ -4,10 +4,10 @@ from typing import Any
 from grapl_analyzerlib.entity_queries import Not
 from grapl_analyzerlib.execution import ExecutionHit
 from pydgraph import DgraphClient
-from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery
+from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, NodeView
 
 
-def analyzer(client: DgraphClient, graph: SubgraphView, sender: Any):
+def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     valid_parents = [
         Not("smss.exe"),
@@ -15,21 +15,24 @@ def analyzer(client: DgraphClient, graph: SubgraphView, sender: Any):
         Not("userinit.exe"),
     ]
 
-    for process in graph.process_iter():
-        p = (
-            ProcessQuery()
-            .with_process_name(eq=valid_parents)
-            .with_children(
-                ProcessQuery().with_process_name(eq="svchost.exe")
-            )
-            .query_first(client, contains_node_key=process.node_key)
-        )
+    process = node.as_process_view()
+    if not process:
+        return
 
-        if p:
-            sender.send(
-                ExecutionHit(
-                    analyzer_name="Suspicious svchost",
-                    node_view=p,
-                    risk_score=10,
-                )
+    p = (
+        ProcessQuery()
+        .with_process_name(eq=valid_parents)
+        .with_children(
+            ProcessQuery().with_process_name(eq="svchost.exe")
+        )
+        .query_first(client, contains_node_key=process.node_key)
+    )
+
+    if p:
+        sender.send(
+            ExecutionHit(
+                analyzer_name="Suspicious svchost",
+                node_view=p,
+                risk_score=10,
             )
+        )
