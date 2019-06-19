@@ -1,10 +1,10 @@
 
-from typing import Any
+from typing import Any, Optional
 
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.counters import ParentChildCounter, Seen
 from pydgraph import DgraphClient
-from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, NodeView
+from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, NodeView, ProcessView
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
@@ -18,28 +18,29 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     p = (
         ProcessQuery()
         .with_process_name()
-        .with_children(
+        .with_parent(
             ProcessQuery()
             .with_process_name()
         )
         .query_first(client, contains_node_key=process.node_key)
-    )
+    )  # type: Optional[ProcessView]
 
     if not p:
         return
 
-    for child in p.children:
-        count = counter.get_count_for(
-            parent_process_name=p.get_process_name(),
-            child_process_name=child.get_process_name(),
-            excluding=process.node_key
-        )
+    parent = p.get_parent()
 
-        if count < Seen.Many:
-            sender.send(
-                ExecutionHit(
-                    analyzer_name="Rare Parent Child Process",
-                    node_view=p,
-                    risk_score=70,
-                )
+    count = counter.get_count_for(
+        parent_process_name=p.get_process_name(),
+        child_process_name=parent.get_process_name(),
+        excluding=process.node_key
+    )
+
+    if count < Seen.Many:
+        sender.send(
+            ExecutionHit(
+                analyzer_name="Rare Parent Child Process",
+                node_view=p,
+                risk_score=70,
             )
+        )
