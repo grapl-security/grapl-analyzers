@@ -10,6 +10,7 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, No
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     valid_parents = [
+        Not("services.exe"),
         Not("smss.exe"),
         Not("ngentask.exe"),
         Not("userinit.exe"),
