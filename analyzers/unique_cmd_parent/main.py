@@ -11,18 +11,19 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, No
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     parent_whitelist = [
-        Not("svchost.exe"),
-        Not("RuntimeBroker.exe"),
-        Not("chrome.exe"),
-        Not("SIHClient.exe"),
-        Not("conhost.exe"),
-        Not("MpCmdRun.exe"),
-        Not("GoogleUpdateComRegisterShell64.exe"),
-        Not("GoogleUpdate.exe"),
-        Not("notepad.exe"),
-        Not("OneDrive.exe"),
-        Not("VBoxTray.exe"),
-        Not("Firefox Installer.exe"),
+        "svchost.exe",
+        "RuntimeBroker.exe",
+        "chrome.exe",
+        "explorer.exe",
+        "SIHClient.exe",
+        "conhost.exe",
+        "MpCmdRun.exe",
+        "GoogleUpdateComRegisterShell64.exe",
+        "GoogleUpdate.exe",
+        "notepad.exe",
+        "OneDrive.exe",
+        "VBoxTray.exe",
+        "Firefox Installer.exe",
     ]
 
     counter = ParentChildCounter(client)
@@ -33,7 +34,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     p = (
         ProcessQuery()
-        .with_process_name(eq=parent_whitelist)
+        .with_process_name(eq=[Not(p) for p in parent_whitelist])
         .with_children(
             ProcessQuery()
             .with_process_name(eq="cmd.exe")
