@@ -8,24 +8,27 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, ExternalIpQue
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
+    # Catch cases where a child process P with a parent of `cmd.exe`
+    # makes outbound external network requests
 
-    process = node.as_process_view()
-    if not process:
-        return
-
-    cmd = ProcessQuery().with_process_name(eq="cmd.exe")
-
-    cmd_child = ProcessQuery().with_parent(cmd)
-
-    cmd_child.with_created_connection(ExternalIpQuery())
-
-    p = cmd_child.query_first(client, contains_node_key=process.node_key)
-
-    if p:
-        sender.send(
-            ExecutionHit(
-                analyzer_name="Cmd Child External Network",
-                node_view=p,
-                risk_score=5,
-            )
-        )
+    return
+    # process = node.as_process_view()
+    # if not process:
+    #     return
+    #
+    # cmd = ProcessQuery().with_process_name(eq="cmd.exe")
+    #
+    # cmd_child = ProcessQuery().with_parent(cmd)
+    #
+    # cmd_child.with_created_connection(ExternalIpQuery())
+    #
+    # p = cmd_child.query_first(client, contains_node_key=process.node_key)
+    #
+    # if p:
+    #     sender.send(
+    #         ExecutionHit(
+    #             analyzer_name="Cmd Child External Network",
+    #             node_view=p,
+    #             risk_score=5,
+    #         )
+    #     )

@@ -17,6 +17,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         Not("SIHClient.exe"),
         Not("conhost.exe"),
         Not("MpCmdRun.exe"),
+        Not("GoogleUpdateComRegisterShell64.exe	"),
     ]
 
     counter = ParentChildCounter(client)
