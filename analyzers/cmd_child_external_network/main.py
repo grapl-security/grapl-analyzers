@@ -24,7 +24,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     if p:
         sender.send(
             ExecutionHit(
-                analyzer_name="Browser Created File",
+                analyzer_name="Cmd Child External Network",
                 node_view=p,
                 risk_score=5,
             )

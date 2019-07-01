@@ -15,6 +15,8 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         Not("RuntimeBroker.exe"),
         Not("chrome.exe"),
         Not("SIHClient.exe"),
+        Not("conhost.exe"),
+        Not("MpCmdRun.exe"),
     ]
 
     counter = ParentChildCounter(client)
