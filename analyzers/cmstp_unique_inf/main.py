@@ -12,11 +12,14 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, Pr
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
 COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
 
-r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0)
+r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
 
 
 def count_path(dg_client, path, max=4):
     cached_count = r.get(path)
+    if cached_count:
+        cached_count = int(cached_count)
+
     if cached_count and cached_count >= max:
         print(f'Cached count: {cached_count}')
         return cached_count
@@ -44,7 +47,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         return
 
     p = (
-        ProcessQuery().with_process_name(ends_with="CMSTP.exe")
+        ProcessQuery().with_process_name(eq="CMSTP.exe")
         .with_read_files(
             FileQuery().with_file_extension(eq=".inf")
         )
