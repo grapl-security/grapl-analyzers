@@ -14,7 +14,7 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, No
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
 COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
 
-r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT)
+r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
