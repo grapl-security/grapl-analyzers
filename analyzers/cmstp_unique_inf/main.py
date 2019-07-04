@@ -9,30 +9,31 @@ from pydgraph import DgraphClient
 from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, ProcessView, NodeView
 
 
-# COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
-# COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
-#
-# r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0)
+COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
+COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
+
+r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0)
 
 
 def count_path(dg_client, path, max=4):
-    # cached_count = r.get(path)
-    # if cached_count and cached_count >= max:
-    #     return cached_count
+    cached_count = r.get(path)
+    if cached_count and cached_count >= max:
+        print(f'Cached count: {cached_count}')
+        return cached_count
 
     count = (
         ProcessQuery().with_process_name(ends_with="CMSTP.exe")
-            .with_read_files(
+        .with_read_files(
             FileQuery().with_file_path(eq=path)
         )
         .get_count(dg_client, max=4)
     )
 
-    # if count >= max:
-    #     if not cached_count:
-    #         r.set(path, count)
-    #     elif count >= cached_count:
-    #         r.set(path, count)
+    if count >= max:
+        if not cached_count:
+            r.set(path, count)
+        elif count >= cached_count:
+            r.set(path, count)
 
     return count
 

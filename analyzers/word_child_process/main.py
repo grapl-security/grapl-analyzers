@@ -17,7 +17,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     p = (
         ProcessQuery()
-        .with_process_name(ends_with=ctas)
+        .with_process_name(eq=ctas)
         .with_children(ProcessQuery())
         .query_first(client, contains_node_key=process.node_key)
     )

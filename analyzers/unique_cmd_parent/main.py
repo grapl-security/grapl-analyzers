@@ -1,11 +1,20 @@
+import os
 
 from typing import Any
+
+import redis
 
 from grapl_analyzerlib.counters import ParentChildCounter, Seen
 from grapl_analyzerlib.entity_queries import Not
 from grapl_analyzerlib.execution import ExecutionHit
 from pydgraph import DgraphClient
 from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, NodeView
+
+
+COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
+COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
+
+r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0)
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
@@ -26,7 +35,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         "Firefox Installer.exe",
     ]
 
-    counter = ParentChildCounter(client)
+    counter = ParentChildCounter(client, cache=r)
 
     process = node.as_process_view()
     if not process:
