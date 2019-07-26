@@ -1,10 +1,10 @@
 
 from typing import Any
 
-from grapl_analyzerlib.entity_queries import Not
+from grapl_analyzerlib.entities import ProcessQuery, NodeView
 from grapl_analyzerlib.execution import ExecutionHit
+from grapl_analyzerlib.querying import Not
 from pydgraph import DgraphClient
-from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, NodeView
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
