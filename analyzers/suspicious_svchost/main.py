@@ -32,6 +32,8 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         .query_first(client, contains_node_key=process.node_key)
     )
 
+    print(f'Queried master graph: {p or "no hit"}')
+
     if p:
         print('Got a hit for Suspicious svchost')
         sender.send(
