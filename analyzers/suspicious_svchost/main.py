@@ -22,6 +22,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     if not process:
         return
 
+    assert process.node_key, 'missing nodekey'
     p = (
         ProcessQuery()
         .with_process_name(eq=valid_parents)
@@ -32,6 +33,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     )
 
     if p:
+        print('Got a hit for Suspicious svchost')
         sender.send(
             ExecutionHit(
                 analyzer_name="Suspicious svchost",

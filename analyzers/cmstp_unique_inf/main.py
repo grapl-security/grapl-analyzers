@@ -42,31 +42,32 @@ def count_path(dg_client, path, max=4):
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
-    node = node.as_process_view()
-    if not node:
-        return
-
-    p = (
-        ProcessQuery().with_process_name(eq="CMSTP.exe")
-        .with_read_files(
-            FileQuery().with_file_extension(eq=".inf")
-        )
-        .query_first(client, contains_node_key=node.node_key)
-    )  # type: Optional[ProcessView]
-
-    if not p:
-        return
-
-    for read_file in p.read_files:
-        # See if at least 4 combinations exist of CMSTP with this file name.
-        count = count_path(client, read_file.get_file_path())
-
-        # If fewer than 4 returned, this is rare enough to track
-        if count < 4:
-            sender.send(
-                ExecutionHit(
-                    analyzer_name="CMSTP with Unique INF",
-                    node_view=p,
-                    risk_score=100,
-                )
-            )
+    return
+    # node = node.as_process_view()
+    # if not node:
+    #     return
+    #
+    # p = (
+    #     ProcessQuery().with_process_name(eq="CMSTP.exe")
+    #     .with_read_files(
+    #         FileQuery().with_file_extension(eq=".inf")
+    #     )
+    #     .query_first(client, contains_node_key=node.node_key)
+    # )  # type: Optional[ProcessView]
+    #
+    # if not p:
+    #     return
+    #
+    # for read_file in p.read_files:
+    #     # See if at least 4 combinations exist of CMSTP with this file name.
+    #     count = count_path(client, read_file.get_file_path())
+    #
+    #     # If fewer than 4 returned, this is rare enough to track
+    #     if count < 4:
+    #         sender.send(
+    #             ExecutionHit(
+    #                 analyzer_name="CMSTP with Unique INF",
+    #                 node_view=p,
+    #                 risk_score=100,
+    #             )
+    #         )
