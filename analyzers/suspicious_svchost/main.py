@@ -21,8 +21,8 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     process = node.as_process_view()
     if not process:
         return
-
-    assert process.node_key, 'missing nodekey'
+    print(f'Scanning node_key: {process.node_key}')
+    assert process.node_key, 'missing node_key'
     p = (
         ProcessQuery()
         .with_process_name(eq=valid_parents)
