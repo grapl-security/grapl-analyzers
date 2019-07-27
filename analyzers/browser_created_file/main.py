@@ -9,11 +9,7 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, No
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     browsers = [
-        "chrome.exe",
         "firefox.exe",
-        "microsoftedgecp.exe",
-        "microsoftedge.exe",
-        "iexplorer.exe"
     ]
 
     process = node.as_process_view()

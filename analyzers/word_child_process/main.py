@@ -8,16 +8,14 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, NodeView
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
-    # commonly targeted applications
-    ctas = ["winword.exe", "excel.exe"]     # TODO: Adobe Reader
-
     process = node.as_process_view()
     if not process:
         return
 
     p = (
         ProcessQuery()
-        .with_process_name(eq=ctas)
+        .with_process_name(eq="winword.exe")
+        .with_process_name(eq="excel.exe")
         .with_children(ProcessQuery())
         .query_first(client, contains_node_key=process.node_key)
     )
