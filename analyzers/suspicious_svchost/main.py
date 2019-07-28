@@ -1,16 +1,13 @@
-import os
+
 from typing import Any
 
 from grapl_analyzerlib.entities import ProcessQuery, NodeView
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.querying import Not
-from pydgraph import DgraphClient, DgraphClientStub
+from pydgraph import DgraphClient
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
-    alpha_names = os.environ["MG_ALPHAS"].split(",")
-    client_stubs = [DgraphClientStub(f"{a_name}:9080") for a_name in alpha_names]
-    client = DgraphClient(*client_stubs)
 
     valid_parents = [
         Not("services.exe"),
@@ -24,8 +21,8 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     process = node.as_process_view()
     if not process:
         return
-    print(f'Scanning node_key: {process.node_key}')
-
+    
+    assert process.node_key, 'missing node_key'
     p = (
         ProcessQuery()
         .with_process_name(eq=valid_parents)
@@ -34,8 +31,6 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         )
         .query_first(client, contains_node_key=process.node_key)
     )
-
-    print(f'Queried master graph: {p or "no hit"}')
 
     if p:
         print('Got a hit for Suspicious svchost')
