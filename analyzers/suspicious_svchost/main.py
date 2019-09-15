@@ -8,6 +8,7 @@ from pydgraph import DgraphClient
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
+    process = node.as_process_view()
     if not process: return
     
     valid_parents = [
@@ -19,8 +20,6 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         Not("conhost.exe"),
         Not("MpCmdRun.exe"),
     ]
-
-    process = node.as_process_view()
     
     p = (
         ProcessQuery()
