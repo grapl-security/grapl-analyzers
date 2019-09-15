@@ -17,6 +17,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         Not("userinit.exe"),
         Not("GoogleUpdate.exe"),
         Not("conhost.exe"),
+        Not("MpCmdRun.exe"),
     ]
 
     process = node.as_process_view()
