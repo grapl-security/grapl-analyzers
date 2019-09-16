@@ -11,7 +11,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     process = node.as_process_view()
     if not process: return
     
-    valid_parents = [
+    invalid_parents = [
         Not("services.exe"),
         Not("smss.exe"),
         Not("ngentask.exe"),
@@ -23,7 +23,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     
     p = (
         ProcessQuery()
-        .with_process_name(eq=valid_parents)
+        .with_process_name(eq=inalid_parents)
         .with_children(
             ProcessQuery().with_process_name(eq="svchost.exe")
         )
