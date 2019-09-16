@@ -23,7 +23,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     
     p = (
         ProcessQuery()
-        .with_process_name(eq=inalid_parents)
+        .with_process_name(eq=invalid_parents)
         .with_children(
             ProcessQuery().with_process_name(eq="svchost.exe")
         )
