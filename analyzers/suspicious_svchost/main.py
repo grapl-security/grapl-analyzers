@@ -1,4 +1,3 @@
-
 from typing import Any
 
 from grapl_analyzerlib.entities import ProcessQuery, NodeView
@@ -7,7 +6,13 @@ from grapl_analyzerlib.querying import Not
 from pydgraph import DgraphClient
 
 
+"""
+The `suspicious_svchost` analyzer looks for executions of a process, where
+the process name is `svchost.exe` and the parent process is not what we expect.
+"""
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
+    process = node.as_process_view()
+    if not process: return
 
     valid_parents = [
         Not("services.exe"),
@@ -16,13 +21,9 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         Not("userinit.exe"),
         Not("GoogleUpdate.exe"),
         Not("conhost.exe"),
+        Not("MpCmdRun.exe"),
     ]
 
-    process = node.as_process_view()
-    if not process:
-        return
-    
-    assert process.node_key, 'missing node_key'
     p = (
         ProcessQuery()
         .with_process_name(eq=valid_parents)
@@ -38,6 +39,6 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
             ExecutionHit(
                 analyzer_name="Suspicious svchost",
                 node_view=p,
-                risk_score=10,
+                risk_score=75,
             )
         )

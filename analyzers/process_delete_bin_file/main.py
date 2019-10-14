@@ -1,3 +1,4 @@
+import os
 
 from typing import Any
 
@@ -7,22 +8,17 @@ from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, No
 
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
-
     process = node.as_process_view()
     if not process:
         return
 
-    unpacker_names = ["7zip.exe", "winrar.exe", "zip.exe"]
-
-    unpacker = ProcessQuery()
-    for name in unpacker_names:
-        unpacker.with_process_name(eq=name)
-
+    # Look for all processes that have deleted files where the file had been executed
     p = (
         ProcessQuery()
-        .with_bin_file(
-            FileQuery().with_creator(
-                unpacker
+        .with_deleted_files(
+            FileQuery()
+            .with_spawned_from(
+                ProcessQuery()
             )
         )
         .query_first(client, contains_node_key=process.node_key)
@@ -31,9 +27,8 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     if p:
         sender.send(
             ExecutionHit(
-                analyzer_name="Process Executing From Unpacked File",
+                analyzer_name="Process Deletes Binary File",
                 node_view=p,
-                risk_score=15,
+                risk_score=20,
             )
         )
-
