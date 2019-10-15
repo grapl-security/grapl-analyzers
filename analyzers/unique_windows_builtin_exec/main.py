@@ -1,13 +1,22 @@
 from typing import Any
 
+import redis
+
+from grapl_analyzerlib.counters import ParentChildCounter, Seen
 from grapl_analyzerlib.execution import ExecutionHit
 from pydgraph import DgraphClient
 from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, NodeView
 
+COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
+COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
+
+r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
 
 def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     process = node.as_process_view()
     if not process: return
+
+    counter = ParentChildCounter(client, cache=r)
 
     p = (
         ProcessQuery()
@@ -29,16 +38,13 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     if not p: return
 
-    count = (
-        ProcessQuery()
-        .with_process_name(eq=p.get_process_name())
-        .with_parent(
-            ProcessQuery()
-                .with_process_name(eq=p.get_parent().get_process_name())
-        )
-        .get_count(client, max=2)
+    count = counter.get_count_for(
+        parent_process_name=p.get_parent().get_process_name(),
+        child_process_name=p.get_process_name(),
+        excluding=process.node_key
     )
-    if count <= 2:
+
+    if count <= Seen.Once:
         sender.send(
             ExecutionHit(
                 analyzer_name="Unique Windows Builtin Execution",
