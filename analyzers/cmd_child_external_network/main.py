@@ -17,6 +17,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     p = (
         ProcessQuery()
+        .with_process_name()
         .with_parent(ProcessQuery().with_process_name(eq="cmd.exe"))
         .with_created_connection(ExternalIpQuery())
         .query_first(client, contains_node_key=process.node_key)
