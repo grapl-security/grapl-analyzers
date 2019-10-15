@@ -33,7 +33,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
             .with_file_path(contains='Windows\\\\System32\\')
             .with_file_path(contains='Windows\\\\SysWow64\\')
         )
-        .query(client, contains_node_key=process.node_key)
+        .query_first(client, contains_node_key=process.node_key)
     )
 
     if not p: return
