@@ -21,25 +21,10 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     if not p: return
 
-    risk_score = 5
-
-    count = (
-        ProcessQuery()
-        .with_process_name(eq=p.get_process_name())
-        .with_parent(
-            ProcessQuery()
-            .with_process_name(eq="powershell.exe")
-        )
-        .get_count(client, max=3)
-    )
-
-    if count < 3:
-        risk_score += 15
-
     sender.send(
         ExecutionHit(
             analyzer_name="Powershell With Child Process",
-            node_view=p.get_parent(),
-            risk_score=risk_score,
+            node_view=p,
+            risk_score=25,
         )
     )
