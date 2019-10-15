@@ -43,7 +43,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         child_process_name=p.get_process_name(),
     )
 
-    if count <= Seen.Once:
+    if count <= 4:
         sender.send(
             ExecutionHit(
                 analyzer_name="Unique Windows Builtin Execution",

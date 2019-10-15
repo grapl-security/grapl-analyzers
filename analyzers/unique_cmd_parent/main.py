@@ -51,10 +51,9 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         count = counter.get_count_for(
             parent_process_name=p.get_process_name(),
             child_process_name="cmd.exe",
-            excluding=process.node_key
         )
 
-        if count <= Seen.Once:
+        if count <= 3:
             sender.send(
                 ExecutionHit(
                     analyzer_name="Rare Parent of cmd.exe",
