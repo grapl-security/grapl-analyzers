@@ -17,7 +17,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
         ProcessQuery()
         .with_read_files(
             FileQuery()
-            .with_file_path(contains="/tmp/ssh-")
+            .with_file_path(contains="/tmp/ssh")
             .with_creator(ProcessQuery())
         )
         .query_first(client, contains_node_key=process.node_key)
