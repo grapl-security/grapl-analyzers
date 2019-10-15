@@ -1,11 +1,11 @@
+import os
 from typing import Any
 
 import redis
-
-from grapl_analyzerlib.counters import ParentChildCounter, Seen
+from grapl_analyzerlib.counters import ParentChildCounter
+from grapl_analyzerlib.entities import ProcessQuery, FileQuery, NodeView
 from grapl_analyzerlib.execution import ExecutionHit
 from pydgraph import DgraphClient
-from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, FileQuery, NodeView
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
 COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
