@@ -49,7 +49,7 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
 
     if p:
         count = counter.get_count_for(
-            parent_process_name=p.process_name,
+            parent_process_name=p.get_process_name(),
             child_process_name="cmd.exe",
             excluding=process.node_key
         )
