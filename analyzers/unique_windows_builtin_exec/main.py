@@ -41,7 +41,6 @@ def analyzer(client: DgraphClient, node: NodeView, sender: Any):
     count = counter.get_count_for(
         parent_process_name=p.get_parent().get_process_name(),
         child_process_name=p.get_process_name(),
-        excluding=process.node_key
     )
 
     if count <= Seen.Once:
