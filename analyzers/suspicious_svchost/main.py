@@ -1,44 +1,37 @@
 from typing import Any
 
-from grapl_analyzerlib.entities import ProcessQuery, NodeView
+from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
+from grapl_analyzerlib.entities import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_analyzerlib.querying import Not
-from pydgraph import DgraphClient
+from grapl_analyzerlib.querying import Not, Queryable
 
 
-"""
-The `suspicious_svchost` analyzer looks for executions of a process, where
-the process name is `svchost.exe` and the parent process is not what we expect.
-"""
-def analyzer(client: DgraphClient, node: NodeView, sender: Any):
-    process = node.as_process_view()
-    if not process: return
+class SuspiciousSvchost(Analyzer):
 
-    invalid_parents = [
-        Not("services.exe"),
-        Not("smss.exe"),
-        Not("ngentask.exe"),
-        Not("userinit.exe"),
-        Not("GoogleUpdate.exe"),
-        Not("conhost.exe"),
-        Not("MpCmdRun.exe"),
-    ]
-    
-    p = (
-        ProcessQuery()
-        .with_process_name(eq=invalid_parents)
-        .with_children(
-            ProcessQuery().with_process_name(eq="svchost.exe")
+    def get_queries(self) -> OneOrMany[ProcessQuery]:
+        invalid_parents = [
+            Not("services.exe"),
+            Not("smss.exe"),
+            Not("ngentask.exe"),
+            Not("userinit.exe"),
+            Not("GoogleUpdate.exe"),
+            Not("conhost.exe"),
+            Not("MpCmdRun.exe"),
+        ]
+
+        return (
+            ProcessQuery()
+            .with_process_name(eq=invalid_parents)
+            .with_children(
+                ProcessQuery().with_process_name(eq="svchost.exe")
+            )
         )
-        .query_first(client, contains_node_key=process.node_key)
-    )
 
-    if p:
-        print('Got a hit for Suspicious svchost')
-        sender.send(
+    def on_response(self, response: ProcessView, output: Any):
+        output.send(
             ExecutionHit(
                 analyzer_name="Suspicious svchost",
-                node_view=p,
+                node_view=response,
                 risk_score=75,
             )
         )

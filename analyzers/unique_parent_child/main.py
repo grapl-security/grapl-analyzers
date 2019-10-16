@@ -1,48 +1,53 @@
+import os
+from typing import Any, Type
 
-from typing import Any, Optional
-
+import redis
+from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
+from grapl_analyzerlib.counters import ParentChildCounter
+from grapl_analyzerlib.entities import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_analyzerlib.counters import ParentChildCounter, Seen
 from pydgraph import DgraphClient
-from grapl_analyzerlib.entities import ProcessQuery, SubgraphView, NodeView, ProcessView
+
+COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
+COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
+
+r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
 
 
-def analyzer(client: DgraphClient, node: NodeView, sender: Any):
+class UniqueParentChild(Analyzer):
 
-    # TODO: Reenable this analyzer
-    return
-    # counter = ParentChildCounter(client)
-    #
-    # process = node.as_process_view()
-    # if not process:
-    #     return
-    #
-    # p = (
-    #     ProcessQuery()
-    #     .with_process_name()
-    #     .with_parent(
-    #         ProcessQuery()
-    #         .with_process_name()
-    #     )
-    #     .query_first(client, contains_node_key=process.node_key)
-    # )  # type: Optional[ProcessView]
-    #
-    # if not p:
-    #     return
-    #
-    # parent = p.get_parent()
-    #
-    # count = counter.get_count_for(
-    #     parent_process_name=p.get_process_name(),
-    #     child_process_name=parent.get_process_name(),
-    #     excluding=process.node_key
-    # )
-    #
-    # if count < Seen.Many:
-    #     sender.send(
-    #         ExecutionHit(
-    #             analyzer_name="Rare Parent Child Process",
-    #             node_view=p,
-    #             risk_score=70,
-    #         )
-    #     )
+    def __init__(self, dgraph_client: DgraphClient, counter: ParentChildCounter):
+        super(UniqueParentChild, self).__init__(dgraph_client)
+        self.counter = counter
+
+    @classmethod
+    def build(cls: Type[A], dgraph_client: DgraphClient) -> A:
+        counter = ParentChildCounter(dgraph_client)
+        return UniqueParentChild(dgraph_client, counter)
+
+    def get_queries(self) -> OneOrMany[ProcessQuery]:
+        return (
+            ProcessQuery()
+            .with_process_name()
+            .with_parent(
+                ProcessQuery()
+                .with_process_name()
+            )
+        )
+
+    def on_response(self, response: ProcessView, output: Any):
+        parent = response.get_parent()
+
+        count = self.counter.get_count_for(
+            parent_process_name=p.get_process_name(),
+            child_process_name=parent.get_process_name(),
+        )
+
+        if count < 2:
+            output.send(
+                ExecutionHit(
+                    analyzer_name="Rare Parent Child Process",
+                    node_view=output,
+                    risk_score=5,
+                )
+            )
