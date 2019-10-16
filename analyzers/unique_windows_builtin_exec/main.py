@@ -4,7 +4,7 @@ from typing import Any, Type
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, A, OneOrMany
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.entities import ProcessQuery, FileQuery
+from grapl_analyzerlib.entities import ProcessQuery, FileQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.querying import Viewable, Queryable
 from pydgraph import DgraphClient
@@ -43,7 +43,7 @@ class UniqueWindowsBuiltinExecution(Analyzer):
             )
         )
 
-    def on_response(self, response: Viewable, output: Any):
+    def on_response(self, response: ProcessView, output: Any):
         count = self.counter.get_count_for(
             parent_process_name=output.get_parent().get_process_name(),
             child_process_name=output.get_process_name(),

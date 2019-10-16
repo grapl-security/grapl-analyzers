@@ -39,7 +39,7 @@ class UniqueParentChild(Analyzer):
         parent = response.get_parent()
 
         count = self.counter.get_count_for(
-            parent_process_name=p.get_process_name(),
+            parent_process_name=response.get_process_name(),
             child_process_name=parent.get_process_name(),
         )
 

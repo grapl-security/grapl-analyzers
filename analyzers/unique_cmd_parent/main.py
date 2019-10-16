@@ -5,7 +5,7 @@ import redis
 from grapl_analyzerlib.counters import ParentChildCounter
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
 
-from grapl_analyzerlib.entities import ProcessQuery, NodeView
+from grapl_analyzerlib.entities import ProcessQuery, NodeView, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.querying import Not, Viewable, Queryable
 from pydgraph import DgraphClient
@@ -53,9 +53,9 @@ class RareParentOfCmd(Analyzer):
             )
         )
 
-    def on_response(self, response: Viewable, output: Any):
+    def on_response(self, response: ProcessView, output: Any):
         count = self.counter.get_count_for(
-            parent_process_name=p.get_process_name(),
+            parent_process_name=response.get_process_name(),
             child_process_name="cmd.exe",
         )
 

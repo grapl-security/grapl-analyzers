@@ -1,7 +1,7 @@
 from typing import Any
 
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.entities import ProcessQuery, FileQuery
+from grapl_analyzerlib.entities import ProcessQuery, FileQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.querying import Viewable
 
@@ -25,7 +25,7 @@ class UnpackedFileExecuting(Analyzer):
             )
         )
 
-    def on_response(self, response: Viewable, output: Any):
+    def on_response(self, response: ProcessView, output: Any):
         output.send(
             ExecutionHit(
                 analyzer_name="Process Executing From Unpacked File",
