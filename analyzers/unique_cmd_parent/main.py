@@ -2,12 +2,11 @@ import os
 from typing import Any, Type
 
 import redis
-from grapl_analyzerlib.counters import ParentChildCounter
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
-
-from grapl_analyzerlib.entities import ProcessQuery, NodeView, ProcessView
+from grapl_analyzerlib.counters import ParentChildCounter
+from grapl_analyzerlib.entities import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_analyzerlib.querying import Not, Viewable, Queryable
+from grapl_analyzerlib.querying import Not
 from pydgraph import DgraphClient
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']

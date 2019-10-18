@@ -16,7 +16,7 @@ class BrowserCreatedFileExecuted(Analyzer):
             .with_created_files(
                 FileQuery()
                 .with_file_path(contains=Not("AppData"))
-                .with_file_extension(eq=Not(".tmp"))
+                .with_file_path(contains=Not("tmp"))
                 .with_spawned_from(
                     ProcessQuery()
                 )
