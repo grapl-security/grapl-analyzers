@@ -15,8 +15,7 @@ class BrowserCreatedFileExecuted(Analyzer):
             .with_process_name(eq="chrome.exe")
             .with_created_files(
                 FileQuery()
-                .with_file_path(contains=Not("AppData"))
-                .with_file_path(contains=Not("tmp"))
+                .with_file_path(contains=[Not("AppData"), Not("tmp")])
                 .with_spawned_from(
                     ProcessQuery()
                 )
