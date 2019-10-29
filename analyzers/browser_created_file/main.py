@@ -6,7 +6,7 @@ from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.querying import Not, Queryable
 
 
-class BrowserCreatedFileExecuted(Analyzer):
+class BrowserCreatedFile(Analyzer):
 
     def get_queries(self) -> OneOrMany[ProcessQuery]:
         return (
@@ -16,16 +16,13 @@ class BrowserCreatedFileExecuted(Analyzer):
             .with_created_files(
                 FileQuery()
                 .with_file_path(contains=[Not("AppData"), Not("tmp")])
-                .with_spawned_from(
-                    ProcessQuery()
-                )
             )
         )
 
     def on_response(self, response: ProcessView, output: Any):
         output.send(
             ExecutionHit(
-                analyzer_name="Browser Created File Executed",
+                analyzer_name="Browser Created File",
                 node_view=response,
                 risk_score=5,
             )
