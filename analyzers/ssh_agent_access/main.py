@@ -13,7 +13,6 @@ COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
 
 r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
 
-
 from copy import deepcopy
 from typing import Union, Optional, Any, List, Tuple, Callable, Type
 
@@ -42,16 +41,16 @@ class InterProcessCommunicationQuery(DynamicNodeQuery):
         self.with_property_str_filter("ipc_type", eq=eq, contains=contains, ends_with=ends_with)
         return self
 
-    def with_created_ipc(self, created_ipc: 'PQ') -> 'InterProcessCommunicationQuery':
+    def with_ipc_creator(self, created_ipc: 'PQ') -> 'InterProcessCommunicationQuery':
         created_ipc = deepcopy(created_ipc)
-        self.with_edge_filter("finding_resource", created_ipc)
-        created_ipc.with_reverse_edge_filter("created_ipc", self)
+        self.with_edge_filter("created_ipc", created_ipc)
+        created_ipc.with_reverse_edge_filter("~created_ipc", self)
         return self
 
-    def with_received_ipc(self, received_ipc: 'PQ') -> 'InterProcessCommunicationQuery':
+    def with_ipc_recipient(self, received_ipc: 'PQ') -> 'InterProcessCommunicationQuery':
         received_ipc = deepcopy(received_ipc)
-        self.with_edge_filter("finding_resource", received_ipc)
-        received_ipc.with_reverse_edge_filter("received_ipc", self)
+        self.with_edge_filter("received_ipc", received_ipc)
+        received_ipc.with_reverse_edge_filter("~received_ipc", self)
         return self
 
 
@@ -62,10 +61,10 @@ class InterProcessCommunicationView(Viewable):
             dgraph_client: DgraphClient,
             node_key: str,
             uid: str,
-            key: str,
-            src_pid: int,
-            agent_pid: int,
-            ipc_type: str,
+            key: str = None,
+            src_pid: int = None,
+            dst_pid: int = None,
+            ipc_type: str = None,
             created_ipc: Optional["PV"] = None,
             received_ipc: Optional["PV"] = None,
             **kwargs,
@@ -73,7 +72,7 @@ class InterProcessCommunicationView(Viewable):
         super(InterProcessCommunicationView, self).__init__(dgraph_client, node_key, uid)
         self.key = key
         self.src_pid = src_pid
-        self.agent_pid = agent_pid
+        self.dst_pid = dst_pid
         self.ipc_type = ipc_type
 
         self.created_ipc = created_ipc
@@ -99,11 +98,19 @@ class InterProcessCommunicationView(Viewable):
         return [
             ("key", str),
             ("src_pid", int),
-            ("agent_pid", int),
+            ("dst_pid", int),
             ("ipc_type", str),
         ]
 
     def get_edge_tuples(self) -> List[Tuple[str, Union[List[Type[V]], Type[V]]]]:
+        return [
+            ("created_ipc", ProcessView),
+            ("received_ipc", ProcessView),
+        ]
+
+
+    @staticmethod
+    def get_edges() -> List[Tuple[str, Union[List[Type[V]], Type[V]]]]:
         return [
             ("created_ipc", ProcessView),
             ("received_ipc", ProcessView),
@@ -117,19 +124,19 @@ class InterProcessCommunicationView(Viewable):
         self.src_pid = self.get_property('src_pid', int)
         return self.src_pid
 
-    def get_agent_pid(self) -> Optional[int]:
-        self.agent_pid = self.get_property('agent_pid', int)
-        return self.agent_pid
+    def get_dst_pid(self) -> Optional[int]:
+        self.dst_pid = self.get_property('dst_pid', int)
+        return self.dst_pid
 
     def get_ipc_type(self) -> Optional[str]:
         self.ipc_type = self.get_property('ipc_type', str)
         return self.ipc_type
 
-    def get_created_ipc(self) -> Optional['PV']:
+    def get_ipc_creator(self) -> Optional['PV']:
         self.created_ipc = self.get_edge("created_ipc", ProcessView)
         return self.created_ipc
 
-    def get_received_ipc(self) -> Optional['PV']:
+    def get_ipc_recipient(self) -> Optional['PV']:
         self.received_ipc = self.get_edge("received_ipc", ProcessView)
         return self.received_ipc
 
