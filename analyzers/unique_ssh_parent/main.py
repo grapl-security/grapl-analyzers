@@ -154,8 +154,7 @@ class RareParentOfSsh(Analyzer):
     def get_queries(self) -> OneOrMany[ProcessQuery]:
         return (
             ProcessQuery()
-            .with_process_name(eq="/bin/ssh")
-            .with_process_name(eq="/usr/bin/ssh")
+            .with_process_name(eq="ssh")
             .with_parent(
                 ProcessQuery()
                 .with_process_name()
