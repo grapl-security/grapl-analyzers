@@ -160,7 +160,7 @@ class SshAgentAccess(Analyzer):
 
         risk_score = 10
 
-        creator_name = response.get_created_ipc().get_process_name()
+        creator_name = response.get_ipc_creator().get_process_name()
         if creator_name and "ssh" not in creator_name :
             risk_score = 25
 
