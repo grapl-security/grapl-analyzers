@@ -4,7 +4,7 @@ from typing import Any, Type
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.entities import ProcessQuery, ProcessView
+from grapl_analyzerlib.entities import ProcessQuery, ProcessView, FileQuery
 from grapl_analyzerlib.execution import ExecutionHit
 from pydgraph import DgraphClient
 
@@ -17,7 +17,7 @@ from copy import deepcopy
 from typing import Union, Optional, Any, List, Tuple, Callable, Type
 
 from grapl_analyzerlib.entities import DynamicNodeQuery, ProcessView, PV
-from grapl_analyzerlib.querying import Viewable, V, StrCmp, IntCmp
+from grapl_analyzerlib.querying import Viewable, V, StrCmp, IntCmp, Not
 from pydgraph import DgraphClient
 
 
@@ -141,28 +141,21 @@ class InterProcessCommunicationView(Viewable):
         return self.received_ipc
 
 
-class SshAgentAccessAuidOrUidMismatch(Analyzer):
+class SshAgentAccessFromNonSSH(Analyzer):
     # Look for IPC access where the target is ssh-agent
+    # and the accessing process is not SSH
     def get_queries(self) -> OneOrMany[InterProcessCommunicationQuery]:
         return (
-            # Query to check for mismatch of uid
             InterProcessCommunicationQuery()
             .with_ipc_creator(
-                ProcessQuery().with_user_id()
+                ProcessQuery()
+                .with_bin_file(
+                    FileQuery()
+                    .with_file_path(eq=[Not("/bin/ssh"), Not("/usr/bin/ssh")])
+                )
             )
             .with_ipc_recipient(
                 ProcessQuery()
-                .with_user_id()
-                .with_process_name(eq='ssh-agent')
-            ),
-            # Query to check for mismatch of auid
-            InterProcessCommunicationQuery()
-            .with_ipc_creator(
-                ProcessQuery().with_auid()
-            )
-            .with_ipc_recipient(
-                ProcessQuery()
-                .with_auid()
                 .with_process_name(eq='ssh-agent')
             )
         )
@@ -179,7 +172,7 @@ class SshAgentAccessAuidOrUidMismatch(Analyzer):
         if user_mismach or auid_mismach:
             output.send(
                 ExecutionHit(
-                    analyzer_name="Ssh Agent Access: UID or AUID mismatch",
+                    analyzer_name="Ssh Agent Access From Not SSH",
                     node_view=output,
                     risk_score=100,
                 )
