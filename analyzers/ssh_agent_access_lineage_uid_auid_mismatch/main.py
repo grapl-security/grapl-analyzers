@@ -1,5 +1,5 @@
 import os
-from typing import Any, Type
+from typing import Any, Type, Set
 
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
@@ -141,7 +141,33 @@ class InterProcessCommunicationView(Viewable):
         return self.received_ipc
 
 
-class SshAgentAccessAuidOrUidMismatch(Analyzer):
+def get_uid_auid_lineage(
+        cur_root: Optional[ProcessView],
+        user_ids: Set[int] = None,
+        auids: Set[int] = None
+) -> Tuple[Set[int], Set[int]]:
+
+    if not user_ids:
+        user_ids = set()
+
+    if not auids:
+        auids = set()
+
+    if not cur_root:
+        return user_ids, auids
+
+    cur_user_id = cur_root.get_user_id()
+    cur_auid = cur_root.get_auid()
+
+    if cur_user_id:
+        user_ids.add(cur_user_id)
+    if cur_auid:
+        auids.add(cur_auid)
+
+    return get_uid_auid_lineage(cur_root.get_parent(), user_ids, auids)
+
+
+class SshAgentAccessLineageAuidOrUidMismatch(Analyzer):
     # Look for IPC access where the target is ssh-agent
     def get_queries(self) -> OneOrMany[InterProcessCommunicationQuery]:
         return (
@@ -170,16 +196,16 @@ class SshAgentAccessAuidOrUidMismatch(Analyzer):
     def on_response(self, response: InterProcessCommunicationView, output: Any):
         print(f'Received suspicious IPC view: {response.node_key}')
 
-        ipc_creator = response.get_ipc_creator()
-        ssh_agent = response.get_ipc_recipient()
+        src_uids, src_auids = get_uid_auid_lineage(response.get_ipc_creator())
+        tgt_uids, tgt_auids = get_uid_auid_lineage(response.get_ipc_recipient())
 
-        user_mismatch = ipc_creator.get_user_id() != ssh_agent.get_user_id()
-        auid_mismatch = ipc_creator.get_auid() != ssh_agent.get_auid()
+        user_mismatch = (src_uids.issuperset(tgt_uids) or src_uids.issubset(tgt_uids))
+        auid_mismatch = (src_auids.issuperset(tgt_auids) or src_auids.issubset(tgt_auids))
 
         if user_mismatch or auid_mismatch:
             output.send(
                 ExecutionHit(
-                    analyzer_name="Ssh Agent Access: UID or AUID mismatch",
+                    analyzer_name="Ssh Agent Access: UID or AUID mismatch in lineage",
                     node_view=output,
                     risk_score=100,
                 )
