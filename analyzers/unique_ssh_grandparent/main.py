@@ -46,6 +46,8 @@ class RareGrandParentOfSsh(Analyzer):
             grand_child_process_name=response.get_process_name(),
         )
 
+        print(f'Counted {count} for parent -> ssh')
+
         if count <= 3:
             output.send(
                 ExecutionHit(
