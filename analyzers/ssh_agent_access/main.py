@@ -145,12 +145,24 @@ class SshAgentAccess(Analyzer):
     # Look for IPC access where the target is ssh-agent
     def get_queries(self) -> OneOrMany[InterProcessCommunicationQuery]:
         return (
+            # Query to check for mismatch of uid
             InterProcessCommunicationQuery()
             .with_ipc_creator(
-                ProcessQuery()
+                ProcessQuery().with_user_id()
             )
             .with_ipc_recipient(
                 ProcessQuery()
+                .with_user_id()
+                .with_process_name(eq='ssh-agent')
+            ),
+            # Query to check for mismatch of auid
+            InterProcessCommunicationQuery()
+            .with_ipc_creator(
+                ProcessQuery().with_auid()
+            )
+            .with_ipc_recipient(
+                ProcessQuery()
+                .with_auid()
                 .with_process_name(eq='ssh-agent')
             )
         )
@@ -158,16 +170,17 @@ class SshAgentAccess(Analyzer):
     def on_response(self, response: InterProcessCommunicationView, output: Any):
         print(f'Received suspicious IPC view: {response.node_key}')
 
-        risk_score = 10
+        ipc_creator = response.get_ipc_creator()
+        ssh_agent = response.get_ipc_recipient()
 
-        creator_name = response.get_ipc_creator().get_process_name()
-        if creator_name and "ssh" not in creator_name :
-            risk_score = 25
+        user_mismach = ipc_creator.get_user_id() != ssh_agent.get_user_id()
+        auid_mismach = ipc_creator.get_auid() != ssh_agent.get_auid()
 
-        output.send(
-            ExecutionHit(
-                analyzer_name="Ssh Agent Access",
-                node_view=output,
-                risk_score=risk_score,
+        if user_mismach or auid_mismach:
+            output.send(
+                ExecutionHit(
+                    analyzer_name="Ssh Agent Access",
+                    node_view=output,
+                    risk_score=100,
+                )
             )
-        )
