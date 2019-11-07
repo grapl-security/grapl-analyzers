@@ -146,12 +146,12 @@ class SshAgentAccess(Analyzer):
     def get_queries(self) -> OneOrMany[InterProcessCommunicationQuery]:
         return (
             InterProcessCommunicationQuery()
-            .with_created_ipc(
+            .with_ipc_creator(
                 ProcessQuery()
             )
-            .with_received_ipc(
+            .with_ipc_recipient(
                 ProcessQuery()
-                .with_process_name('ssh-agent')
+                .with_process_name(eq='ssh-agent')
             )
         )
 
