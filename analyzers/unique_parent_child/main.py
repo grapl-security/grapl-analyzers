@@ -47,7 +47,7 @@ class UniqueParentChild(Analyzer):
             output.send(
                 ExecutionHit(
                     analyzer_name="Rare Parent Child Process",
-                    node_view=output,
+                    node_view=response,
                     risk_score=5,
                 )
             )
