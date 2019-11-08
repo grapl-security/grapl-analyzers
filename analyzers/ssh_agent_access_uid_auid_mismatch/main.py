@@ -116,6 +116,11 @@ class InterProcessCommunicationView(Viewable):
             ("received_ipc", ProcessView),
         ]
 
+    def get_neighbors(self):
+        return [
+            n for n in (self.created_ipc, self.received_ipc) if n
+        ]
+
     def get_key(self) -> Optional[str]:
         self.key = self.get_property('key', str)
         return self.key
