@@ -102,12 +102,12 @@ class InterProcessCommunicationView(Viewable):
             ("ipc_type", str),
         ]
 
+
     def get_edge_tuples(self) -> List[Tuple[str, Union[List[Type[V]], Type[V]]]]:
         return [
-            ("created_ipc", ProcessView),
-            ("received_ipc", ProcessView),
+            ("created_ipc", self.created_ipc),
+            ("received_ipc", self.received_ipc),
         ]
-
 
     @staticmethod
     def get_edges() -> List[Tuple[str, Union[List[Type[V]], Type[V]]]]:
