@@ -166,4 +166,3 @@ class SshAgentIPC(Analyzer):
                 risk_score=75,
             )
         )
-    
