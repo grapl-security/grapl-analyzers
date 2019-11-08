@@ -95,12 +95,15 @@ class InterProcessCommunicationView(Viewable):
         ]
 
     def get_property_tuples(self) -> List[Tuple[str, Any]]:
-        return [
-            ("key", str),
-            ("src_pid", int),
-            ("dst_pid", int),
-            ("ipc_type", str),
+        prop_tuples = [
+            ("node_key", self.node_key),
+            ("key", self.key),
+            ("src_pid", self.src_pid),
+            ("dst_pid", self.dst_pid),
+            ("ipc_type", self.ipc_type),
         ]
+
+        return [pt for pt in prop_tuples if pt[1]]
 
     def get_edge_tuples(self) -> List[Tuple[str, Union[List[Type[V]], Type[V]]]]:
         edge_tuples = [
@@ -109,7 +112,7 @@ class InterProcessCommunicationView(Viewable):
         ]
 
         return [et for et in edge_tuples if et[1]]
-    
+
     @staticmethod
     def get_edges() -> List[Tuple[str, Union[List[Type[V]], Type[V]]]]:
         return [
