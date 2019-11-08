@@ -1,17 +1,12 @@
-from copy import deepcopy
-from typing import Union, Optional, Any, List, Tuple, Callable, Type
-
-from grapl_analyzerlib.entities import DynamicNodeQuery, ProcessView, PV
-from grapl_analyzerlib.querying import Viewable, V, StrCmp, IntCmp
-from pydgraph import DgraphClient
-
 import os
-from typing import Set
+from typing import Any, Type
 
 import redis
-from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.entities import ProcessQuery
+from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
+from grapl_analyzerlib.counters import ParentChildCounter
+from grapl_analyzerlib.entities import ProcessQuery, ProcessView, FileQuery
 from grapl_analyzerlib.execution import ExecutionHit
+from pydgraph import DgraphClient
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
 COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
@@ -22,7 +17,7 @@ from copy import deepcopy
 from typing import Union, Optional, Any, List, Tuple, Callable, Type
 
 from grapl_analyzerlib.entities import DynamicNodeQuery, ProcessView, PV
-from grapl_analyzerlib.querying import Viewable, V, StrCmp, IntCmp
+from grapl_analyzerlib.querying import Viewable, V, StrCmp, IntCmp, Not
 from pydgraph import DgraphClient
 
 
@@ -146,72 +141,29 @@ class InterProcessCommunicationView(Viewable):
         return self.received_ipc
 
 
-def get_uid_auid_lineage(
-        cur_root: Optional[ProcessView],
-        user_ids: Set[int] = None,
-        auids: Set[int] = None
-) -> Tuple[Set[int], Set[int]]:
-
-    if not user_ids:
-        user_ids = set()
-
-    if not auids:
-        auids = set()
-
-    if not cur_root:
-        return user_ids, auids
-
-    cur_user_id = cur_root.get_user_id()
-    cur_auid = cur_root.get_auid()
-
-    if cur_user_id:
-        user_ids.add(cur_user_id)
-    if cur_auid:
-        auids.add(cur_auid)
-
-    return get_uid_auid_lineage(cur_root.get_parent(), user_ids, auids)
-
-
-class SshAgentAccessLineageAuidOrUidMismatch(Analyzer):
-    # Look for IPC access where the target is ssh-agent
+class SshAgentIPC(Analyzer):
     def get_queries(self) -> OneOrMany[InterProcessCommunicationQuery]:
         return (
-            # Query to check for mismatch of uid
             InterProcessCommunicationQuery()
             .with_ipc_creator(
-                ProcessQuery().with_user_id()
+                ProcessQuery()
+                .with_bin_file(
+                    FileQuery()
+                    .with_file_path(eq=[Not("/usr/bin/ssh-add"), Not("/bin/ssh"), Not("/usr/bin/ssh")])
+                )
             )
             .with_ipc_recipient(
                 ProcessQuery()
-                    .with_user_id()
-                    .with_process_name(eq='ssh-agent')
-            ),
-            # Query to check for mismatch of auid
-            InterProcessCommunicationQuery()
-            .with_ipc_creator(
-                ProcessQuery().with_auid()
-            )
-            .with_ipc_recipient(
-                ProcessQuery()
-                    .with_auid()
                     .with_process_name(eq='ssh-agent')
             )
         )
 
     def on_response(self, response: InterProcessCommunicationView, output: Any):
-        print(f'Received suspicious IPC view: {response.node_key}')
-
-        src_uids, src_auids = get_uid_auid_lineage(response.get_ipc_creator())
-        tgt_uids, tgt_auids = get_uid_auid_lineage(response.get_ipc_recipient())
-
-        user_mismatch = (src_uids.issuperset(tgt_uids) or src_uids.issubset(tgt_uids))
-        auid_mismatch = (src_auids.issuperset(tgt_auids) or src_auids.issubset(tgt_auids))
-
-        if user_mismatch or auid_mismatch:
-            output.send(
-                ExecutionHit(
-                    analyzer_name="Ssh Agent Access: UID or AUID mismatch in lineage",
-                    node_view=output,
-                    risk_score=100,
-                )
+        output.send(
+            ExecutionHit(
+                analyzer_name="SSH IPC",
+                node_view=response,
+                risk_score=75,
             )
+        )
+    
