@@ -174,9 +174,9 @@ def get_uid_auid_lineage(
     cur_user_id = cur_root.get_user_id()
     cur_auid = cur_root.get_auid()
 
-    if cur_user_id:
+    if cur_user_id is not None:
         user_ids.add(cur_user_id)
-    if cur_auid:
+    if cur_auid is not None:
         auids.add(cur_auid)
 
     return get_uid_auid_lineage(cur_root.get_parent(), user_ids, auids)
@@ -225,3 +225,6 @@ class SshAgentAccessLineageAuidOrUidMismatch(Analyzer):
                     risk_score=100,
                 )
             )
+
+
+
