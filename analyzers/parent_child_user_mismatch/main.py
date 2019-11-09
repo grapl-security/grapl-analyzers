@@ -31,10 +31,10 @@ class ParentChildUserMismatch(Analyzer):
         uid_mismatch = False
         auid_mismatch = False
 
-        if parent.get_user_id() and child.get_user_id():
+        if parent.get_user_id() is not None and child.get_user_id() is not None:
             uid_mismatch = parent.get_user_id() != child.get_user_id()
 
-        if parent.get_auid() and child.get_auid():
+        if parent.get_auid() is not None and child.get_auid() is not None:
             auid_mismatch = parent.get_auid() != child.get_auid()
 
         if uid_mismatch or auid_mismatch:

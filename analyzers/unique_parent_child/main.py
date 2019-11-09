@@ -38,16 +38,16 @@ class UniqueParentChild(Analyzer):
     def on_response(self, response: ProcessView, output: Any):
         parent = response.get_parent()
 
-        count = self.counter.get_count_for(
-            parent_process_name=response.get_process_name(),
-            child_process_name=parent.get_process_name(),
-        )
-
-        if count < 2:
-            output.send(
-                ExecutionHit(
-                    analyzer_name="Rare Parent Child Process",
-                    node_view=response,
-                    risk_score=5,
-                )
-            )
+        # count = self.counter.get_count_for(
+        #     parent_process_name=response.get_process_name(),
+        #     child_process_name=parent.get_process_name(),
+        # )
+        #
+        # if count < 2:
+        #     output.send(
+        #         ExecutionHit(
+        #             analyzer_name="Rare Parent Child Process",
+        #             node_view=response,
+        #             risk_score=5,
+        #         )
+        #     )
