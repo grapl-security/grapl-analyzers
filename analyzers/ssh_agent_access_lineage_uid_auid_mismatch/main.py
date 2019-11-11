@@ -159,7 +159,7 @@ class InterProcessCommunicationView(Viewable):
 def get_uid_auid_lineage(
         cur_root: Optional[ProcessView],
         user_ids: Set[int] = None,
-        auids: Set[int] = None
+        auids: Set[int] = None,
 ) -> Tuple[Set[int], Set[int]]:
 
     if not user_ids:
@@ -195,6 +195,7 @@ class SshAgentAccessLineageAuidOrUidMismatch(Analyzer):
                 ProcessQuery()
                     .with_user_id()
                     .with_process_name(eq='ssh-agent')
+                    .with_process_name(eq='sshd')
             ),
             # Query to check for mismatch of auid
             InterProcessCommunicationQuery()
@@ -205,6 +206,7 @@ class SshAgentAccessLineageAuidOrUidMismatch(Analyzer):
                 ProcessQuery()
                     .with_auid()
                     .with_process_name(eq='ssh-agent')
+                    .with_process_name(eq='sshd')
             )
         )
 
