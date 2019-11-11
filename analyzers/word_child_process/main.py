@@ -21,7 +21,7 @@ class CommonTargetWithChildProcess(Analyzer):
         output.send(
             ExecutionHit(
                 analyzer_name="Common Target Application With Child Process",
-                node_view=output,
+                node_view=response,
                 risk_score=75,
             )
         )

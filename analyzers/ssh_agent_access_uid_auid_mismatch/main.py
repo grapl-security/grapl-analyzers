@@ -163,6 +163,7 @@ class SshAgentAccessAuidOrUidMismatch(Analyzer):
                 ProcessQuery()
                 .with_user_id()
                 .with_process_name(eq='ssh-agent')
+                .with_process_name(eq='sshd')
             ),
             # Query to check for mismatch of auid
             InterProcessCommunicationQuery()
@@ -173,6 +174,7 @@ class SshAgentAccessAuidOrUidMismatch(Analyzer):
                 ProcessQuery()
                 .with_auid()
                 .with_process_name(eq='ssh-agent')
+                .with_process_name(eq='sshd')
             )
         )
 
@@ -189,7 +191,7 @@ class SshAgentAccessAuidOrUidMismatch(Analyzer):
             output.send(
                 ExecutionHit(
                     analyzer_name="Ssh Agent Access: UID or AUID mismatch",
-                    node_view=output,
+                    node_view=response,
                     risk_score=100,
                 )
             )

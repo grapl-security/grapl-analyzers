@@ -53,7 +53,7 @@ class UniqueWindowsBuiltinExecution(Analyzer):
             output.send(
                 ExecutionHit(
                     analyzer_name="Unique Windows Builtin Execution",
-                    node_view=output,
+                    node_view=response,
                     risk_score=15,
                 )
             )
