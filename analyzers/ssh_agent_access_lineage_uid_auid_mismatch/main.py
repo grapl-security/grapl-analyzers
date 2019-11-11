@@ -223,7 +223,7 @@ class SshAgentAccessLineageAuidOrUidMismatch(Analyzer):
             output.send(
                 ExecutionHit(
                     analyzer_name="Ssh Agent Access: UID or AUID mismatch in lineage",
-                    node_view=output,
+                    node_view=response,
                     risk_score=100,
                 )
             )
