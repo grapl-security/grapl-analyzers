@@ -4,12 +4,12 @@ from typing import Any, Type
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.entities import ProcessQuery, ProcessView
-from grapl_analyzerlib.execution import ExecutionHit
+from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
+# from grapl_analyzerlib.execution import ExecutionHit
 from pydgraph import DgraphClient
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
-COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
+COUNTCACHE_PORT = int(os.environ['COUNTCACHE_PORT'])
 
 r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
 

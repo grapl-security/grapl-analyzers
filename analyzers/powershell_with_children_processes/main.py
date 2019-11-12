@@ -1,7 +1,7 @@
 from typing import Any
 
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.entities import ProcessQuery, ProcessView
+from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
 
 

@@ -1,14 +1,13 @@
 from typing import Any
 
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.entities import ProcessQuery, ProcessView
+from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_analyzerlib.querying import Viewable, Queryable
 
 
 class CommonTargetWithChildProcess(Analyzer):
 
-    def get_queries(self) -> OneOrMany[Queryable]:
+    def get_queries(self) -> OneOrMany[ProcessQuery]:
         return (
             ProcessQuery()
             .with_process_name(eq="winword.exe")

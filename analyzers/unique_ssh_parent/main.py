@@ -3,7 +3,7 @@ import os
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.entities import ProcessQuery
+from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
@@ -13,7 +13,6 @@ r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_respons
 
 from typing import Any, Type
 
-from grapl_analyzerlib.entities import ProcessView
 from pydgraph import DgraphClient
 
 class RareParentOfSsh(Analyzer):

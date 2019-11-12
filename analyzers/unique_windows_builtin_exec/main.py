@@ -4,9 +4,9 @@ from typing import Any, Type
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, A, OneOrMany
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.entities import ProcessQuery, FileQuery, ProcessView
+from grapl_analyzerlib.prelude import ProcessQuery, FileQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_analyzerlib.querying import Viewable, Queryable
+from grapl_analyzerlib.prelude import Viewable, Queryable
 from pydgraph import DgraphClient
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
@@ -25,7 +25,7 @@ class UniqueWindowsBuiltinExecution(Analyzer):
         counter = ParentChildCounter(dgraph_client)
         return UniqueWindowsBuiltinExecution(dgraph_client, counter)
 
-    def get_queries(self) -> OneOrMany[Queryable]:
+    def get_queries(self) -> OneOrMany[ProcessQuery]:
         return (
             ProcessQuery()
             .with_process_name()
