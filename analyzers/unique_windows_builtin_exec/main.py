@@ -4,9 +4,8 @@ from typing import Any, Type
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, A, OneOrMany
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.prelude import ProcessQuery, FileQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_analyzerlib.prelude import Viewable, Queryable
+from grapl_analyzerlib.prelude import ProcessQuery, FileQuery, ProcessView
 from pydgraph import DgraphClient
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
