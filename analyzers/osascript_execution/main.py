@@ -20,6 +20,7 @@ class OsascriptExecutionWithRareFileRead(Analyzer):
         super(OsascriptExecutionWithRareFileRead, self).__init__(dgraph_client)
         self.counter = counter
 
+    @classmethod
     def build(
             cls: Type['OsascriptExecutionWithRareFileRead'],
             dgraph_client: DgraphClient
