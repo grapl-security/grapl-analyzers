@@ -24,8 +24,8 @@ class OsascriptExecutionWithRareFileRead(Analyzer):
             cls: Type['OsascriptExecutionWithRareFileRead'],
             dgraph_client: DgraphClient
     ) -> 'OsascriptExecutionWithRareFileRead':
-        counter = SubgraphCounter(dgraph_client, )
-        return cls(dgraph_client, counter)
+        counter = SubgraphCounter(dgraph_client)
+        return OsascriptExecutionWithRareFileRead(dgraph_client, counter)
 
     def get_queries(self) -> OneOrMany[ProcessQuery]:
         return (
