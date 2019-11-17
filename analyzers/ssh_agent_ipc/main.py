@@ -12,7 +12,7 @@ r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_respons
 
 from typing import *
 
-from grapl_analyzerlib.prelude import ProcessQuery
+from grapl_analyzerlib.prelude import ProcessQuery, FileQuery
 from grapl_analyzerlib.nodes.comparators import Not
 
 

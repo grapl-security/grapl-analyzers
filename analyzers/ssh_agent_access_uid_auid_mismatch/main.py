@@ -72,21 +72,23 @@ class SshAgentAccessAuidOrUidMismatch(Analyzer):
                 with_assumed_user_id(ProcessQuery())
             )
             .with_ipc_recipient(
-                ProcessQuery()
-                .with_user_id()
-                .with_process_name(eq='ssh-agent')
-                .with_process_name(eq='sshd')
+                with_assumed_user_id(
+                    ProcessQuery()
+                    .with_process_name(eq='ssh-agent')
+                    .with_process_name(eq='sshd')
+                )
             ),
             # Query to check for mismatch of auid
             IpcQuery()
             .with_ipc_creator(
-                ProcessQuery().with_auid()
+                with_assumed_auid(ProcessQuery())
             )
             .with_ipc_recipient(
-                ProcessQuery()
-                .with_auid()
-                .with_process_name(eq='ssh-agent')
-                .with_process_name(eq='sshd')
+                with_assumed_auid(
+                    ProcessQuery()
+                    .with_process_name(eq='ssh-agent')
+                    .with_process_name(eq='sshd')
+                )
             )
         )
 
