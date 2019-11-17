@@ -2,7 +2,6 @@ import os
 
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.entities import ProcessQuery, FileQuery
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
 
