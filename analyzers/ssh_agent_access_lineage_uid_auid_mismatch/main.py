@@ -7,7 +7,7 @@ from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.nodes.process_node import ProcessView
 from grapl_os_user_analyzer_plugin.assumed_auid_node import AssumedAuidQuery
 
-from analyzers.ssh_agent_ipc.main import IpcQuery, IpcView
+from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
 COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
