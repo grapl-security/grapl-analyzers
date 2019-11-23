@@ -1,26 +1,17 @@
-import os
+from typing import *
+from typing import Any
 
-import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
 from grapl_analyzerlib.execution import ExecutionHit
-from typing import *
-
-COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
-COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
-
-r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
-
-from typing import Any
 from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
-from grapl_os_user_analyzer_plugin.assumed_user_id_node import AssumedUserIdQuery
-from grapl_os_user_analyzer_plugin.assumed_auid_node import AssumedAuidQuery
+from grapl_os_user_analyzer_plugin.assumed_auid_node import AuidAssumptionQuery
+from grapl_os_user_analyzer_plugin.assumed_user_id_node import UserIdAssumptionQuery, UserIdAssumptionView
 
 
 def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:
-    # The ssh_process must have an associated user id
     (
-        AssumedUserIdQuery()
+        UserIdAssumptionQuery()
         .with_assuming_process(process)
         .with_user_id()
     )
@@ -28,22 +19,21 @@ def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:
 
 
 def with_assumed_auid(process: ProcessQuery):
-    # The ssh_process must have an associated auid
     (
-        AssumedAuidQuery()
-            .with_assuming_process(process)
-            .with_auid()
+        AuidAssumptionQuery()
+        .with_assuming_process(process)
+        .with_auid()
     )
     return process
 
 
 def get_user_id(process: ProcessView) -> Optional[int]:
     user_assumption = (
-        AssumedUserIdQuery()
+        UserIdAssumptionQuery()
             .with_assuming_process(ProcessQuery().with_node_key(process.node_key))
             .with_user_id()
             .query_first(process.dgraph_client)
-    )  # type: Optional[AssumedUserIdView]
+    )  # type: Optional[UserIdAssumptionView]
     if user_assumption:
         return user_assumption.get_used_id()
 
@@ -51,11 +41,11 @@ def get_user_id(process: ProcessView) -> Optional[int]:
 
 def get_auid(process: ProcessView) -> Optional[int]:
     auid_assumption = (
-        AssumedAuidQuery()
+        AuidAssumptionQuery()
             .with_assuming_process(ProcessQuery().with_node_key(process.node_key))
             .with_auid()
             .query_first(process.dgraph_client)
-    )  # type: Optional[AssumedUserIdView]
+    )  # type: Optional[UserIdAssumptionView]
     if auid_assumption:
         return auid_assumption.get_auid()
 

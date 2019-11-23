@@ -1,19 +1,10 @@
-import os
-
-import redis
-from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.execution import ExecutionHit
-from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
-
-COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
-COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
-
-r = redis.Redis(host=COUNTCACHE_ADDR, port=COUNTCACHE_PORT, db=0, decode_responses=True)
-
 from typing import *
 
-from grapl_analyzerlib.prelude import ProcessQuery, FileQuery
+from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
+from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.nodes.comparators import Not
+from grapl_analyzerlib.prelude import ProcessQuery, FileQuery
+from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
 
 
 class SshAgentIPC(Analyzer):
