@@ -1,16 +1,15 @@
 from typing import *
 
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
-from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
-from grapl_os_user_analyzer_plugin.assumed_user_id_node import AssumedUserIdView, AssumedUserIdQuery
-from grapl_os_user_analyzer_plugin.user_id_node import UserIdQuery
+from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
+from grapl_os_user_analyzer_plugin.assumed_user_id_node import UserIdAssumptionView, UserIdAssumptionQuery
 
 
 def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:
     # The ssh_process must have an associated user id
     (
-        AssumedUserIdQuery()
+        UserIdAssumptionQuery()
             .with_assuming_process(process)
             .with_user_id()
     )
@@ -19,11 +18,11 @@ def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:
 
 def get_user_id(process: ProcessView) -> Optional[int]:
     user_assumption = (
-        AssumedUserIdQuery()
+        UserIdAssumptionQuery()
         .with_assuming_process(ProcessQuery().with_node_key(process.node_key))
         .with_user_id()
         .query_first(process.dgraph_client)
-    )  # type: Optional[AssumedUserIdView]
+    )  # type: Optional[UserIdAssumptionView]
     if user_assumption:
         return user_assumption.get_used_id()
 
