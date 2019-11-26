@@ -1,23 +1,14 @@
 import os
 from typing import *
 
-import redis
 from grapl_analyzerlib.analyzer import Analyzer
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.nodes.process_node import ProcessView
-from grapl_os_user_analyzer_plugin.assumed_auid_node import AuidAssumptionQuery
-
-from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
-
-COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
-COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
-
-r = redis.Redis(host=COUNTCACHE_ADDR, port=int(COUNTCACHE_PORT), db=0, decode_responses=True)
-
 from grapl_analyzerlib.nodes.types import OneOrMany
 from grapl_analyzerlib.prelude import ProcessQuery
-
-from grapl_os_user_analyzer_plugin.assumed_user_id_node import UserIdAssumptionQuery, UserIdAssumptionView
+from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
+from grapl_os_user_analyzer_plugin.auid_assumption_node import AuidAssumptionQuery
+from grapl_os_user_analyzer_plugin.user_id_assumption_node import UserIdAssumptionQuery, UserIdAssumptionView
 
 
 def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:
@@ -63,7 +54,6 @@ def get_auid(process: ProcessView) -> Optional[int]:
 
     return None
 
-from typing import Set
 
 def get_uid_auid_lineage(
         cur_root: Optional[ProcessView],

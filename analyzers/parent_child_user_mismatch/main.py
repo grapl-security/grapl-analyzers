@@ -3,7 +3,7 @@ from typing import *
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
-from grapl_os_user_analyzer_plugin.assumed_user_id_node import UserIdAssumptionView, UserIdAssumptionQuery
+from grapl_os_user_analyzer_plugin.user_id_assumption_node import UserIdAssumptionView, UserIdAssumptionQuery
 
 
 def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:

@@ -5,8 +5,8 @@ from grapl_analyzerlib.analyzer import Analyzer, OneOrMany
 from grapl_analyzerlib.execution import ExecutionHit
 from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_ipc_analyzer_plugin.ipc_node import IpcQuery, IpcView
-from grapl_os_user_analyzer_plugin.assumed_auid_node import AuidAssumptionQuery
-from grapl_os_user_analyzer_plugin.assumed_user_id_node import UserIdAssumptionQuery, UserIdAssumptionView
+from grapl_os_user_analyzer_plugin.auid_assumption_node import AuidAssumptionQuery
+from grapl_os_user_analyzer_plugin.user_id_assumption_node import UserIdAssumptionQuery, UserIdAssumptionView
 
 
 def with_assumed_user_id(process: ProcessQuery) -> ProcessQuery:
