@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+mypy.ini
+.dmypy.json
 __pycache__/
 *.py[cod]
 *$py.class
