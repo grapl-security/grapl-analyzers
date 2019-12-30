@@ -12,9 +12,7 @@ class ProcessDeletesBinaryFile(Analyzer):
             ProcessQuery()
             .with_deleted_files(
                 FileQuery()
-                .with_spawned_from(
-                    ProcessQuery()
-                )
+                .with_spawned_from()
             )
         )
 

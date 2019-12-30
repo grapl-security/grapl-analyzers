@@ -18,8 +18,8 @@ def load_analyzer():
         # The ssh_process must have an associated user id
         (
             UserIdAssumptionQuery()
-                .with_assuming_process(process)
-                .with_user_id()
+            .with_assuming_process(process)
+            .with_user_id()
         )
         return process
 

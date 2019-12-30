@@ -3,8 +3,8 @@ import os
 import redis
 from grapl_analyzerlib.analyzer import Analyzer, OneOrMany, A
 from grapl_analyzerlib.counters import ParentChildCounter
-from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 from grapl_analyzerlib.execution import ExecutionHit
+from grapl_analyzerlib.prelude import ProcessQuery, ProcessView
 
 COUNTCACHE_ADDR = os.environ['COUNTCACHE_ADDR']
 COUNTCACHE_PORT = os.environ['COUNTCACHE_PORT']
@@ -14,6 +14,7 @@ r = redis.Redis(host=COUNTCACHE_ADDR, port=int(COUNTCACHE_PORT), db=0, decode_re
 from typing import Any, Type
 
 from pydgraph import DgraphClient
+
 
 class RareParentOfSsh(Analyzer):
 
@@ -29,10 +30,10 @@ class RareParentOfSsh(Analyzer):
     def get_queries(self) -> OneOrMany[ProcessQuery]:
         return (
             ProcessQuery()
-            .with_process_name(eq="ssh")
-            .with_parent(
+                .with_process_name(eq="ssh")
+                .with_parent(
                 ProcessQuery()
-                .with_process_name()
+                    .with_process_name()
             )
         )
 
@@ -41,7 +42,7 @@ class RareParentOfSsh(Analyzer):
             parent_process_name=response.get_parent().get_process_name(),
             child_process_name=response.get_process_name(),
         )
-        print(f'Counted {count } for parent -> ssh')
+        print(f'Counted {count} for parent -> ssh')
         if count <= 3:
             output.send(
                 ExecutionHit(
