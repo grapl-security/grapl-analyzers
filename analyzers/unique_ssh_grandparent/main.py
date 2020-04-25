@@ -40,6 +40,8 @@ class RareGrandParentOfSsh(Analyzer):
         )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         count = self.counter.get_count_for(
             grand_parent_process_name=response.get_parent().get_parent().get_process_name(),
             grand_child_process_name=response.get_process_name(),
@@ -53,5 +55,6 @@ class RareGrandParentOfSsh(Analyzer):
                     analyzer_name="Rare GrandParent of SSH",
                     node_view=response,
                     risk_score=5,
+                    lenses=asset_id,
                 )
             )

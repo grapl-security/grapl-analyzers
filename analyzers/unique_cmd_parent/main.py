@@ -52,6 +52,8 @@ class RareParentOfCmd(Analyzer):
         )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         count = self.counter.get_count_for(
             parent_process_name=response.get_process_name(),
             child_process_name="cmd.exe",
@@ -63,5 +65,6 @@ class RareParentOfCmd(Analyzer):
                     analyzer_name="Rare Parent of cmd.exe",
                     node_view=response,
                     risk_score=5,
+                    lenses=asset_id,
                 )
             )

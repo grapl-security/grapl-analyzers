@@ -17,10 +17,13 @@ class CommonTargetWithChildProcess(Analyzer):
          )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         output.send(
             ExecutionHit(
                 analyzer_name="Common Target Application With Child Process",
                 node_view=response,
                 risk_score=75,
+                lenses=asset_id,
             )
         )

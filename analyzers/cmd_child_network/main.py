@@ -19,11 +19,14 @@ class CmdChildNetwork(Analyzer):
         )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         output.send(
             ExecutionHit(
                 analyzer_name="Cmd Child Network",
                 node_view=response,
                 risk_score=5,
+                lenses=asset_id
             )
         )
 

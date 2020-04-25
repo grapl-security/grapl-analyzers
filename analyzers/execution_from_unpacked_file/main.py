@@ -26,10 +26,13 @@ class UnpackedFileExecuting(Analyzer):
 
     def on_response(self, response: ProcessView, output: Any):
         print(f'Unpacked process: {response.get_process_name()}')
+        asset_id = response.get_asset().get_hostname()
+
         output.send(
             ExecutionHit(
                 analyzer_name="Process Executing From Unpacked File",
                 node_view=response,
                 risk_score=15,
+                lenses=asset_id,
             )
         )

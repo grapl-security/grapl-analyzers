@@ -43,6 +43,8 @@ class UniqueWindowsBuiltinExecution(Analyzer):
         )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         count = self.counter.get_count_for(
             parent_process_name=output.get_parent().get_process_name(),
             child_process_name=output.get_process_name(),
@@ -54,5 +56,6 @@ class UniqueWindowsBuiltinExecution(Analyzer):
                     analyzer_name="Unique Windows Builtin Execution",
                     node_view=response,
                     risk_score=15,
+                    lenses=asset_id,
                 )
             )

@@ -40,6 +40,8 @@ class OsascriptExecutionWithRareFileRead(Analyzer):
         )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         rare_read_file = False
 
         for read_file in response.get_read_files():
@@ -59,5 +61,6 @@ class OsascriptExecutionWithRareFileRead(Analyzer):
                     analyzer_name="Osascript Process Execution - Rare File Read",
                     node_view=response,
                     risk_score=5,
+                    lenses=asset_id,
                 )
             )

@@ -38,6 +38,8 @@ class RareParentOfSsh(Analyzer):
         )
 
     def on_response(self, response: ProcessView, output: Any):
+        asset_id = response.get_asset().get_hostname()
+
         count = self.counter.get_count_for(
             parent_process_name=response.get_parent().get_process_name(),
             child_process_name=response.get_process_name(),
@@ -49,5 +51,6 @@ class RareParentOfSsh(Analyzer):
                     analyzer_name="Rare Parent of SSH",
                     node_view=response,
                     risk_score=5,
+                    lenses=asset_id,
                 )
             )

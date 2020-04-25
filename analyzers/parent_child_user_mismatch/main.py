@@ -50,6 +50,8 @@ def load_analyzer():
              )
 
         def on_response(self, child: ProcessView, output: Any):
+            asset_id = child.get_asset().get_hostname()
+
             parent = child.get_parent()
 
             child_user_id = get_user_id(child)
@@ -62,6 +64,7 @@ def load_analyzer():
                         analyzer_name="Parent Child User Mismatch",
                         node_view=child,
                         risk_score=25,
+                        lenses=asset_id,
                     )
                 )
 

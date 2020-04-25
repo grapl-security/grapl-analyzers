@@ -33,11 +33,14 @@ def load_analyzer():
             )
 
         def on_response(self, response: IpcView, output: Any) -> None:
+            asset_id = response.get_ipc_creator().get_asset().get_hostname()
+
             output.send(
                 ExecutionHit(
                     analyzer_name="SSH IPC",
                     node_view=response,
                     risk_score=75,
+                    lenses=asset_id,
                 )
             )
 

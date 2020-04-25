@@ -90,6 +90,7 @@ def load_analyzer():
 
         def on_response(self, response: IpcView, output: Any):
             print(f'Received suspicious IPC view: {response.node_key}')
+            asset_id = response.get_ipc_creator().get_asset().get_hostname()
 
             ipc_creator = response.get_ipc_creator()
             ssh_agent = response.get_ipc_recipient()
@@ -103,6 +104,7 @@ def load_analyzer():
                         analyzer_name="Ssh Agent Access: UID or AUID mismatch",
                         node_view=response,
                         risk_score=100,
+                        lenses=asset_id,
                     )
                 )
 
